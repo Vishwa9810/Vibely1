@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vibely – Find Your Activity Buddy</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+:root{
+  --coral:#FF6B6B;--teal:#4ECDC4;--yellow:#FFE66D;
+  --dark:#111;--bg:#F7F6F2;--card:#fff;
+  --border:#EEEDE8;--muted:#888;
+  --fn:'Nunito',sans-serif;--syne:'Syne',sans-serif;
+  --sidebar:240px;
+  --nav-h:64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html{height:100%;}
+body{font-family:var(--fn);background:#0f0f0f;min-height:100vh;overflow-x:hidden;height:100%;}
+
+/* ══ PAGES ══ */
+.page{display:none;min-height:100vh;}
+.page.active{display:flex;}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes bf{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-22px) scale(1.06)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+
+/* ══════════════════════════════════════════════════
+   SSO PAGE
+══════════════════════════════════════════════════ */
+#pg-sso{background:#0D0D0D;align-items:stretch;position:relative;overflow:hidden;}
+.sso-bg{position:absolute;inset:0;pointer-events:none;z-index:0;}
+.sblob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.26;}
+.bl1{width:500px;height:500px;background:#FF6B6B;top:-120px;right:-100px;animation:bf 6s ease-in-out infinite;}
+.bl2{width:400px;height:400px;background:#4ECDC4;bottom:60px;left:-120px;animation:bf 8s ease-in-out infinite reverse;}
+.bl3{width:240px;height:240px;background:#FFE66D;top:35%;right:18%;animation:bf 5s ease-in-out infinite 1s;}
+
+.sso-layout{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;width:100%;position:relative;z-index:10;}
+
+/* SSO Brand Side */
+.sso-brand{display:flex;flex-direction:column;justify-content:center;padding:80px 64px;color:#F7F6F2;}
+.sso-logo-row{display:flex;align-items:center;gap:14px;margin-bottom:44px;animation:fadeUp .5s ease both;}
+.sso-logo-box{width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,#FF6B6B,#FFE66D);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 12px 32px rgba(255,107,107,.38);flex-shrink:0;}
+.sso-appname{font-family:var(--syne);font-size:36px;font-weight:800;letter-spacing:-1px;}
+.sso-illo{font-size:56px;margin-bottom:24px;letter-spacing:6px;animation:fadeUp .5s ease .12s both;line-height:1;}
+.sso-headline{font-family:var(--syne);font-size:clamp(28px,3.2vw,46px);font-weight:800;line-height:1.1;margin-bottom:14px;animation:fadeUp .5s ease .2s both;}
+.sso-sub{font-size:15px;color:rgba(247,246,242,.46);line-height:1.75;max-width:360px;margin-bottom:38px;font-weight:500;animation:fadeUp .5s ease .26s both;}
+.sso-pills{display:flex;flex-wrap:wrap;gap:9px;animation:fadeUp .5s ease .32s both;}
+.sso-pill{padding:7px 15px;border-radius:100px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+
+/* SSO Form Side */
+.sso-form-side{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.03);border-left:1px solid rgba(255,255,255,.06);padding:60px 52px;}
+.sso-form-box{width:100%;max-width:380px;}
+.sso-form-title{font-family:var(--syne);font-size:28px;font-weight:800;color:#F7F6F2;margin-bottom:6px;animation:fadeUp .5s ease .38s both;}
+.sso-form-sub{font-size:14px;color:rgba(247,246,242,.4);margin-bottom:30px;font-weight:500;animation:fadeUp .5s ease .42s both;}
+.sso-btn{width:100%;height:54px;border-radius:16px;border:none;font-family:var(--fn);font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:11px;margin-bottom:12px;transition:transform .14s,box-shadow .14s;animation:fadeUp .5s ease .46s both;}
+.sso-btn:hover{transform:translateY(-2px);}
+.sso-btn:active{transform:scale(.97);}
+.btn-google{background:#F7F6F2;color:#0D0D0D;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.btn-campus{background:linear-gradient(135deg,#FF6B6B,#FF8E53);color:#fff;box-shadow:0 8px 28px rgba(255,107,107,.4);animation-delay:.5s;}
+.sso-or{display:flex;align-items:center;gap:12px;margin-bottom:12px;animation:fadeUp .5s ease .52s both;}
+.sso-or span{font-size:12px;color:rgba(247,246,242,.26);font-weight:600;}
+.sso-or-line{flex:1;height:1px;background:rgba(247,246,242,.09);}
+.sso-terms{font-size:11px;color:rgba(247,246,242,.24);text-align:center;margin-top:16px;line-height:1.5;animation:fadeUp .5s ease .56s both;}
+.sso-terms span{color:rgba(247,246,242,.5);text-decoration:underline;cursor:pointer;}
+
+/* ══════════════════════════════════════════════════
+   APP PAGE
+══════════════════════════════════════════════════ */
+#pg-app{flex-direction:row;min-height:100vh;background:var(--bg);}
+
+/* ── SIDEBAR (Desktop) ── */
+.sidebar{width:var(--sidebar);background:var(--dark);min-height:100vh;display:flex;flex-direction:column;padding:28px 16px;flex-shrink:0;position:sticky;top:0;height:100vh;z-index:100;}
+.sb-logo-row{display:flex;align-items:center;gap:12px;margin-bottom:40px;padding:0 4px;}
+.sb-logo-box{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#FF6B6B,#FFE66D);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.sb-appname{font-family:var(--syne);font-size:21px;font-weight:800;color:#F7F6F2;}
+.sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;}
+.sb-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;cursor:pointer;transition:all .14s;color:rgba(247,246,242,.38);font-weight:700;font-size:13.5px;user-select:none;}
+.sb-item:hover{background:rgba(247,246,242,.06);color:#F7F6F2;}
+.sb-item.active{background:rgba(255,107,107,.15);color:#FF6B6B;}
+.sb-ico{font-size:18px;width:22px;text-align:center;flex-shrink:0;}
+.sb-user{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:12px;background:#1A1A1A;margin-top:14px;cursor:pointer;transition:background .14s;}
+.sb-user:hover{background:#222;}
+.sb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#FFE66D);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;font-family:var(--syne);}
+.sb-uname{font-size:13px;font-weight:800;color:#F7F6F2;}
+.sb-ucourse{font-size:11px;color:rgba(247,246,242,.38);font-weight:600;}
+.sb-out{margin-left:auto;font-size:14px;cursor:pointer;color:rgba(247,246,242,.35);transition:color .14s;padding:4px;}
+.sb-out:hover{color:#FF6B6B;}
+
+/* ── MOBILE TOP BAR ── */
+.mobile-topbar{display:none;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background:var(--dark);position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,.05);}
+.mtb-logo{display:flex;align-items:center;gap:10px;}
+.mtb-logo-box{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#FF6B6B,#FFE66D);display:flex;align-items:center;justify-content:center;font-size:15px;}
+.mtb-appname{font-family:var(--syne);font-size:18px;font-weight:800;color:#F7F6F2;}
+.mtb-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#FFE66D);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;font-family:var(--syne);cursor:pointer;flex-shrink:0;}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--safe-bottom));background:var(--dark);border-top:1px solid rgba(255,255,255,.07);z-index:200;align-items:flex-start;justify-content:space-around;padding-top:0;}
+.mn-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;padding:10px 4px 0;cursor:pointer;transition:all .14s;color:rgba(247,246,242,.35);min-height:var(--nav-h);}
+.mn-item.active{color:#FF6B6B;}
+.mn-ico{font-size:20px;line-height:1;}
+.mn-lbl{font-size:9.5px;font-weight:800;letter-spacing:.01em;}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;overflow-y:auto;height:100vh;}
+.view{display:none;padding:40px 44px 60px;animation:fadeUp .3s ease both;}
+.view.active{display:block;}
+
+/* view header */
+.vhdr{margin-bottom:28px;}
+.vhdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:10px;}
+.vtitle{font-family:var(--syne);font-size:26px;font-weight:800;color:var(--dark);}
+.vsub{font-size:13px;color:var(--muted);font-weight:600;margin-top:3px;}
+.back-btn{display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:11px;padding:8px 14px;cursor:pointer;font-family:var(--fn);font-size:13px;font-weight:800;color:var(--dark);transition:all .14s;white-space:nowrap;flex-shrink:0;}
+.back-btn:hover{background:var(--dark);color:#fff;border-color:var(--dark);}
+
+/* ── HOME ── */
+.home-toprow{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:12px;}
+.home-greet{font-size:13px;color:var(--muted);font-weight:600;}
+.home-uname{font-family:var(--syne);font-size:28px;font-weight:800;color:var(--dark);margin-top:2px;}
+.home-av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#FFE66D);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;font-family:var(--syne);cursor:pointer;flex-shrink:0;transition:transform .14s;}
+.home-av:hover{transform:scale(1.06);}
+
+.find-hero{background:var(--dark);border-radius:24px;padding:30px;cursor:pointer;position:relative;overflow:hidden;margin-bottom:28px;transition:transform .18s;}
+.find-hero:hover{transform:translateY(-3px);}
+.find-hero:active{transform:scale(.98);}
+.fhbg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,107,107,.22),rgba(78,205,196,.14));}
+.fh-title{font-family:var(--syne);font-size:30px;font-weight:800;color:#fff;position:relative;line-height:1.15;margin-bottom:9px;}
+.fh-sub{font-size:14px;color:rgba(255,255,255,.46);position:relative;margin-bottom:20px;font-weight:500;}
+.fh-cta{background:#FF6B6B;color:#fff;border:none;border-radius:13px;padding:11px 22px;font-family:var(--fn);font-weight:800;font-size:14px;cursor:pointer;position:relative;transition:transform .14s;}
+.fh-cta:hover{transform:scale(1.04);}
+.fh-em{position:absolute;right:28px;bottom:16px;font-size:64px;opacity:.28;line-height:1;}
+
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sec-title{font-family:var(--syne);font-size:17px;font-weight:800;color:var(--dark);}
+.sec-link{font-size:13px;font-weight:700;color:var(--coral);cursor:pointer;white-space:nowrap;}
+.sec-link:hover{text-decoration:underline;}
+
+.live-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.live-card{background:var(--card);border-radius:20px;padding:18px;cursor:pointer;border:1.5px solid var(--border);transition:all .17s;}
+.live-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.08);border-color:var(--coral);}
+.live-card:active{transform:scale(.97);}
+.live-badge{display:inline-flex;align-items:center;gap:4px;background:#FF6B6B;color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;margin-bottom:10px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.5s infinite;}
+.live-icon{font-size:30px;margin-bottom:8px;}
+.live-sport{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:3px;}
+.live-info{font-size:12px;color:var(--muted);font-weight:600;line-height:1.45;}
+
+.act-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:10px;}
+.act-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;}
+.act-box{width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;transition:transform .14s;border:1.5px solid transparent;}
+.act-item:hover .act-box{transform:scale(1.1);border-color:var(--coral);}
+.act-lbl{font-size:10px;font-weight:700;color:#555;text-align:center;}
+
+/* ── FIND ── */
+.find-layout{display:grid;grid-template-columns:300px 1fr;gap:24px;}
+.filter-panel{background:var(--card);border-radius:20px;padding:26px;border:1.5px solid var(--border);height:fit-content;position:sticky;top:40px;}
+.filter-title{font-family:var(--syne);font-size:16px;font-weight:800;color:var(--dark);margin-bottom:20px;}
+.flbl{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px;margin-top:18px;}
+.flbl:first-of-type{margin-top:0;}
+.pills{display:flex;flex-wrap:wrap;gap:7px;}
+.pill{padding:8px 15px;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;transition:all .14s;border:1.5px solid var(--border);background:#fff;color:#555;display:flex;align-items:center;gap:5px;}
+.pill:hover{border-color:var(--dark);color:var(--dark);}
+.pill.sel{background:var(--dark);color:#fff;border-color:var(--dark);}
+.pill:active{transform:scale(.95);}
+.preview-box{background:#F7F6F2;border-radius:14px;padding:15px;border:1.5px solid var(--border);margin-top:16px;}
+.preview-row{display:flex;align-items:center;gap:11px;}
+.match-btn{width:100%;height:52px;background:linear-gradient(135deg,#FF6B6B,#FF8E53);border:none;border-radius:16px;font-family:var(--fn);font-size:15px;font-weight:800;color:#fff;cursor:pointer;margin-top:20px;box-shadow:0 8px 24px rgba(255,107,107,.3);transition:transform .14s;}
+.match-btn:hover{transform:translateY(-2px);}
+.match-btn:active{transform:scale(.97);}
+
+/* ── MATCHES ── */
+.msummary{background:var(--dark);border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:9px;margin-bottom:16px;flex-wrap:wrap;}
+.msummary span{font-size:13px;color:rgba(255,255,255,.62);font-weight:600;}
+.msummary strong{font-size:13px;color:#fff;font-weight:800;}
+.mcard{background:var(--card);border-radius:20px;padding:18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;cursor:pointer;border:1.5px solid var(--border);transition:all .17s;}
+.mcard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.07);border-color:var(--coral);}
+.mcard:active{transform:scale(.98);}
+.mav{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;font-family:var(--syne);flex-shrink:0;}
+.minfo{flex:1;min-width:0;}
+.mname{font-size:15px;font-weight:800;color:var(--dark);margin-bottom:3px;}
+.mmeta{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:7px;}
+.mtags{display:flex;gap:5px;flex-wrap:wrap;}
+.mtag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:7px;}
+.chat-btn{background:var(--dark);color:#fff;border:none;border-radius:12px;padding:11px 20px;font-family:var(--fn);font-size:13px;font-weight:800;cursor:pointer;flex-shrink:0;transition:transform .14s;white-space:nowrap;}
+.chat-btn:hover{transform:scale(1.04);}
+.chat-btn:active{transform:scale(.96);}
+
+/* ── CHAT ── */
+.chat-layout{display:grid;grid-template-columns:260px 1fr;gap:20px;height:calc(100vh - 200px);}
+.convo-list{display:flex;flex-direction:column;gap:3px;overflow-y:auto;}
+.convo-item{display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:13px;cursor:pointer;transition:background .14s;flex-shrink:0;}
+.convo-item:hover{background:var(--card);}
+.convo-item.active{background:var(--card);border:1.5px solid var(--border);}
+.conv-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;font-family:var(--syne);}
+.conv-name{font-size:13px;font-weight:800;color:var(--dark);}
+.conv-last{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
+.conv-time{font-size:10px;color:var(--muted);font-weight:600;flex-shrink:0;align-self:flex-start;margin-top:2px;}
+.conv-badge{background:var(--coral);color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:10px;flex-shrink:0;}
+.chat-win{background:var(--card);border-radius:20px;border:1.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.chdr{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;flex-wrap:wrap;}
+.chav{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#4ECDC4,#44A08D);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;font-family:var(--syne);flex-shrink:0;}
+.cname{font-size:14px;font-weight:800;color:var(--dark);}
+.cstatus{font-size:11px;color:#4ECDC4;font-weight:700;}
+.cbadge{margin-left:auto;background:#FFF3F0;border-radius:9px;padding:6px 12px;font-size:12px;font-weight:800;color:var(--coral);flex-shrink:0;}
+.cmsgs{flex:1;overflow-y:auto;padding:18px 22px;display:flex;flex-direction:column;gap:10px;}
+.msg{display:flex;flex-direction:column;max-width:65%;}
+.msg.s{align-self:flex-end;align-items:flex-end;}
+.msg.r{align-self:flex-start;align-items:flex-start;}
+.bubble{padding:11px 14px;border-radius:18px;font-size:13px;line-height:1.5;font-weight:500;word-break:break-word;}
+.msg.s .bubble{background:var(--dark);color:#fff;border-bottom-right-radius:4px;}
+.msg.r .bubble{background:#fff;color:var(--dark);border:1.5px solid var(--border);border-bottom-left-radius:4px;}
+.mtime{font-size:10px;color:#bbb;font-weight:600;margin-top:3px;}
+.sysmsg{align-self:center;background:#EEEDE8;border-radius:10px;padding:5px 14px;font-size:11px;color:var(--muted);font-weight:700;text-align:center;max-width:80%;}
+.cinput-bar{padding:14px 18px;background:var(--card);border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-shrink:0;}
+.cinput{flex:1;height:44px;background:#F7F6F2;border:1.5px solid var(--border);border-radius:13px;padding:0 14px;font-family:var(--fn);font-size:13px;font-weight:600;color:var(--dark);outline:none;transition:border .14s;}
+.cinput:focus{border-color:var(--coral);}
+.csend{width:44px;height:44px;background:var(--coral);border:none;border-radius:13px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .14s;}
+.csend:hover{transform:scale(1.06);}
+.csend:active{transform:scale(.92);}
+
+/* ── GROUPS ── */
+.groups-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.gcard{background:var(--card);border-radius:20px;padding:18px;cursor:pointer;border:1.5px solid var(--border);transition:all .17s;}
+.gcard:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.07);border-color:var(--coral);}
+.gcard:active{transform:scale(.98);}
+.gcard-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.gemo{font-size:30px;flex-shrink:0;}
+.gname{font-size:14px;font-weight:800;color:var(--dark);}
+.gsched{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
+.gmems-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap;gap:8px;}
+.gmems{display:flex;align-items:center;}
+.mav2{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;margin-left:-5px;border:2px solid #fff;flex-shrink:0;}
+.mav2:first-child{margin-left:0;}
+.gcnt{font-size:11px;color:var(--muted);font-weight:700;margin-left:7px;}
+.gjoin{background:#F7F6F2;border:1.5px solid var(--border);border-radius:9px;padding:6px 14px;font-family:var(--fn);font-size:12px;font-weight:800;color:var(--dark);cursor:pointer;transition:all .14s;}
+.gjoin:hover{background:var(--dark);color:#fff;border-color:var(--dark);}
+.gjoin.joined{background:var(--dark);color:#fff;border-color:var(--dark);}
+.create-card{background:var(--dark);border-radius:20px;padding:28px;text-align:center;cursor:pointer;transition:transform .17s;}
+.create-card:hover{transform:translateY(-3px);}
+
+/* ── PROFILE ── */
+.profile-layout{display:grid;grid-template-columns:270px 1fr;gap:24px;}
+.prof-card{background:var(--dark);border-radius:24px;padding:34px;display:flex;flex-direction:column;align-items:center;height:fit-content;position:sticky;top:40px;}
+.pav-lg{width:82px;height:82px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#FFE66D);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;font-family:var(--syne);margin-bottom:13px;box-shadow:0 10px 28px rgba(255,107,107,.38);}
+.pname{font-family:var(--syne);font-size:22px;font-weight:800;color:#F7F6F2;margin-bottom:3px;}
+.pcourse{font-size:12px;color:rgba(247,246,242,.42);font-weight:600;margin-bottom:22px;}
+.pstats{display:flex;gap:26px;margin-bottom:26px;}
+.pstat-val{font-family:var(--syne);font-size:24px;font-weight:800;color:#F7F6F2;text-align:center;}
+.pstat-lbl{font-size:11px;color:rgba(247,246,242,.38);font-weight:700;text-align:center;}
+.pverif{display:flex;align-items:center;gap:9px;background:#1A1A1A;border-radius:12px;padding:12px 15px;width:100%;margin-bottom:10px;}
+.pverif-icon{font-size:17px;}
+.pverif-name{font-size:13px;font-weight:800;color:#F7F6F2;}
+.pverif-sub{font-size:11px;color:rgba(247,246,242,.38);font-weight:600;margin-top:1px;}
+.psignout{width:100%;height:42px;border-radius:11px;border:1.5px solid #2A2A2A;background:transparent;font-family:var(--fn);font-size:13px;font-weight:800;color:var(--coral);cursor:pointer;margin-top:5px;transition:background .14s;}
+.psignout:hover{background:rgba(255,107,107,.1);}
+.prof-details{display:flex;flex-direction:column;gap:15px;}
+.detail-card{background:var(--card);border-radius:20px;padding:22px;border:1.5px solid var(--border);}
+.dtitle{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:13px;}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{padding:7px 13px;border-radius:100px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+.skill-row{background:#F7F6F2;border-radius:13px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;border:1.5px solid var(--border);}
+.ski{font-size:18px;margin-right:11px;}
+.skname{font-size:13px;font-weight:800;color:var(--dark);flex:1;}
+.sklvl{padding:4px 9px;border-radius:7px;font-size:11px;font-weight:800;}
+.avrow{background:#F7F6F2;border-radius:13px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;border:1.5px solid var(--border);margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.avlbl{font-size:13px;font-weight:700;color:var(--dark);}
+.avt{font-size:12px;font-weight:700;color:var(--coral);}
+
+/* ══════════════════════════════════════════════════
+   MOBILE CHAT STATE
+══════════════════════════════════════════════════ */
+.chat-back-btn{display:none;align-items:center;gap:8px;background:none;border:none;font-family:var(--fn);font-size:14px;font-weight:800;color:var(--coral);cursor:pointer;padding:0;margin-bottom:14px;}
+
+/* ══════════════════════════════════════════════════
+   TABLET BREAKPOINT (≤ 1024px)
+══════════════════════════════════════════════════ */
+@media (max-width:1024px){
+  .sso-brand{padding:60px 44px;}
+  .sso-form-side{padding:60px 36px;}
+  .view{padding:32px 28px 60px;}
+  .live-grid{grid-template-columns:repeat(2,1fr);}
+  .act-grid{grid-template-columns:repeat(4,1fr);}
+  .find-layout{grid-template-columns:260px 1fr;gap:18px;}
+  .groups-grid{grid-template-columns:repeat(2,1fr);}
+  .chat-layout{grid-template-columns:220px 1fr;gap:14px;}
+  .profile-layout{grid-template-columns:240px 1fr;}
+}
+
+/* ══════════════════════════════════════════════════
+   MOBILE BREAKPOINT (≤ 768px)
+══════════════════════════════════════════════════ */
+@media (max-width:768px){
+
+  /* SSO mobile */
+  #pg-sso{align-items:flex-start;}
+  .sso-layout{grid-template-columns:1fr;min-height:100vh;}
+  .sso-brand{display:none;}
+  .sso-form-side{border-left:none;padding:0;background:transparent;align-items:flex-start;min-height:100vh;}
+  .sso-form-box{max-width:none;width:100%;padding:40px 24px 40px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+  .sso-form-title{font-size:28px;}
+
+  /* Mobile header for SSO */
+  .sso-form-box::before{
+    content:'';display:block;
+  }
+  .mobile-sso-header{display:flex;flex-direction:column;align-items:center;margin-bottom:40px;animation:fadeUp .5s ease both;}
+  .mobile-sso-logo{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#FF6B6B,#FFE66D);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 12px 32px rgba(255,107,107,.38);margin-bottom:16px;}
+  .mobile-sso-appname{font-family:var(--syne);font-size:32px;font-weight:800;color:#F7F6F2;margin-bottom:8px;}
+  .mobile-sso-tagline{font-size:14px;color:rgba(247,246,242,.46);font-weight:500;text-align:center;max-width:280px;line-height:1.6;}
+
+  /* App layout mobile */
+  #pg-app{flex-direction:column;}
+  .sidebar{display:none;}
+  .mobile-topbar{display:flex;}
+  .mobile-nav{display:flex;}
+
+  .main{height:auto;overflow-y:visible;padding-bottom:calc(var(--nav-h) + var(--safe-bottom));}
+  .view{padding:20px 16px 24px;animation:fadeUp .25s ease both;}
+
+  /* Home mobile */
+  .home-toprow{margin-bottom:18px;}
+  .home-uname{font-size:22px;}
+  .home-av{display:none;} /* handled by topbar */
+  .fh-title{font-size:22px;}
+  .fh-em{font-size:44px;right:16px;bottom:12px;}
+  .find-hero{padding:22px;border-radius:20px;margin-bottom:20px;}
+  .live-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+  .live-card{padding:14px;}
+  .live-icon{font-size:24px;margin-bottom:6px;}
+  .act-grid{grid-template-columns:repeat(4,1fr);gap:8px;}
+  .act-box{width:100%;aspect-ratio:1;border-radius:14px;font-size:22px;}
+  .act-lbl{font-size:9px;}
+
+  /* Find mobile */
+  .find-layout{grid-template-columns:1fr;gap:16px;}
+  .filter-panel{position:static;border-radius:16px;padding:18px;}
+  .pill{font-size:12px;padding:7px 12px;}
+  .match-btn{height:48px;}
+
+  /* Matches mobile */
+  .mcard{padding:14px;gap:10px;border-radius:16px;}
+  .mav{width:44px;height:44px;font-size:15px;}
+  .mname{font-size:14px;}
+  .chat-btn{padding:9px 14px;font-size:12px;}
+
+  /* Chat mobile */
+  .view#view-chat{padding:0;}
+  .chat-layout{
+    grid-template-columns:1fr;
+    height:calc(100vh - 56px - var(--nav-h) - var(--safe-bottom));
+    gap:0;
+  }
+  .chat-col-list{display:block;}
+  .chat-col-window{display:none;}
+  .chat-col-window.open{display:flex;}
+  .chat-col-list.hidden{display:none;}
+  .chat-back-btn{display:flex;}
+
+  /* Chat list mobile wrapper */
+  .chat-list-wrap{padding:16px 16px 0;}
+  .chat-win-wrap{height:100%;display:flex;flex-direction:column;}
+  .chat-win-header-mobile{padding:12px 16px 0;flex-shrink:0;}
+  .chat-win{border-radius:0;border:none;border-top:1px solid var(--border);}
+  .chat-layout .chat-win{border-radius:0;}
+
+  /* Groups mobile */
+  .groups-grid{grid-template-columns:1fr;gap:10px;}
+  .view#view-groups .vhdr{padding:0;margin-bottom:18px;}
+
+  /* Profile mobile */
+  .profile-layout{grid-template-columns:1fr;gap:16px;}
+  .prof-card{position:static;border-radius:20px;padding:28px;}
+  .pav-lg{width:68px;height:68px;font-size:24px;}
+
+  /* View headers */
+  .vtitle{font-size:22px;}
+  .vhdr{margin-bottom:18px;}
+
+  /* Misc fixes */
+  .msummary{border-radius:12px;padding:11px 14px;}
+  .sec-hdr{margin-bottom:10px;}
+}
+
+/* Extra small */
+@media (max-width:380px){
+  .live-grid{grid-template-columns:1fr 1fr;}
+  .act-grid{grid-template-columns:repeat(4,1fr);}
+  .home-uname{font-size:20px;}
+  .fh-title{font-size:20px;}
+  .pill{font-size:11px;padding:6px 10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SSO PAGE ══════════════════════════════════════ -->
+<div id="pg-sso" class="page active">
+  <div class="sso-bg">
+    <div class="sblob bl1"></div>
+    <div class="sblob bl2"></div>
+    <div class="sblob bl3"></div>
+  </div>
+  <div class="sso-layout">
+    <!-- Brand side (desktop only) -->
+    <div class="sso-brand">
+      <div class="sso-logo-row">
+        <div class="sso-logo-box">🎯</div>
+        <div class="sso-appname">Vibely</div>
+      </div>
+      <div class="sso-illo">🏃‍♂️🏸🎵🚴‍♀️</div>
+      <div class="sso-headline">Your campus,<br>your activity crew.</div>
+      <div class="sso-sub">Connect with students around you in real-time. No awkward group texts. Find your buddy in under 30 seconds.</div>
+      <div class="sso-pills">
+        <div class="sso-pill" style="background:rgba(255,107,107,.15);color:#FF8E8E">🏃 Running</div>
+        <div class="sso-pill" style="background:rgba(78,205,196,.15);color:#4ECDC4">🏸 Badminton</div>
+        <div class="sso-pill" style="background:rgba(255,230,109,.18);color:#C9A100">🚴 Cycling</div>
+        <div class="sso-pill" style="background:rgba(155,89,182,.15);color:#BD94E0">🎵 Singing</div>
+        <div class="sso-pill" style="background:rgba(247,246,242,.07);color:rgba(247,246,242,.42)">⚽ Football</div>
+        <div class="sso-pill" style="background:rgba(247,246,242,.07);color:rgba(247,246,242,.42)">🏋️ Gym</div>
+      </div>
+    </div>
+
+    <!-- Form side -->
+    <div class="sso-form-side">
+      <div class="sso-form-box">
+        <!-- Mobile-only header inside form box -->
+        <div class="mobile-sso-header">
+          <div class="mobile-sso-logo">🎯</div>
+          <div class="mobile-sso-appname">Vibely</div>
+          <div class="mobile-sso-tagline">Connect with your campus activity crew in real-time</div>
+        </div>
+
+        <div class="sso-form-title">Welcome to Vibely 👋</div>
+        <div class="sso-form-sub">Sign in with your campus account to get started</div>
+        <button class="sso-btn btn-google" onclick="gotoApp()">
+          <span style="font-size:18px;font-weight:900;font-family:serif;color:#EA4335">G</span>
+          Continue with Google
+        </button>
+        <div class="sso-or"><div class="sso-or-line"></div><span>or</span><div class="sso-or-line"></div></div>
+        <button class="sso-btn btn-campus" onclick="gotoApp()">🎓&nbsp; Sign in with Campus Email</button>
+        <div class="sso-terms">By continuing you agree to our <span>Terms of Service</span> &amp; <span>Privacy Policy</span>.<br>Campus email required for verification.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP PAGE ══════════════════════════════════════ -->
+<div id="pg-app" class="page">
+
+  <!-- MOBILE TOP BAR -->
+  <div class="mobile-topbar">
+    <div class="mtb-logo">
+      <div class="mtb-logo-box">🎯</div>
+      <div class="mtb-appname">Vibely</div>
+    </div>
+    <div class="mtb-av" onclick="navTo('profile',document.getElementById('nav-profile'))">AM</div>
+  </div>
+
+  <!-- DESKTOP SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-logo-row">
+      <div class="sb-logo-box">🎯</div>
+      <div class="sb-appname">Vibely</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-item active" id="nav-home"    onclick="navTo('home',this)"><span class="sb-ico">🏠</span>Home</div>
+      <div class="sb-item"        id="nav-find"    onclick="navTo('find',this)"><span class="sb-ico">🔍</span>Find Buddy</div>
+      <div class="sb-item"        id="nav-matches" onclick="navTo('matches',this)"><span class="sb-ico">✨</span>Matches</div>
+      <div class="sb-item"        id="nav-chat"    onclick="navTo('chat',this)"><span class="sb-ico">💬</span>Chat</div>
+      <div class="sb-item"        id="nav-groups"  onclick="navTo('groups',this)"><span class="sb-ico">👥</span>Groups</div>
+      <div class="sb-item"        id="nav-profile" onclick="navTo('profile',this)"><span class="sb-ico">👤</span>Profile</div>
+    </nav>
+    <div class="sb-user" onclick="navTo('profile',document.getElementById('nav-profile'))">
+      <div class="sb-av">AM</div>
+      <div><div class="sb-uname">Aarav Mehta</div><div class="sb-ucourse">MBA Year 1 · IITB</div></div>
+      <div class="sb-out" title="Sign out" onclick="event.stopPropagation();goTo('pg-sso')">⎋</div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main" id="main-scroll">
+
+    <!-- ══ HOME ══ -->
+    <div id="view-home" class="view active">
+      <div class="home-toprow">
+        <div><div class="home-greet">Good morning 👋</div><div class="home-uname">Aarav</div></div>
+        <div class="home-av" onclick="navTo('profile',document.getElementById('nav-profile'))">AM</div>
+      </div>
+      <div class="find-hero" onclick="navTo('find',document.getElementById('nav-find'))">
+        <div class="fhbg"></div>
+        <div class="fh-title">Find Your<br>Activity Buddy</div>
+        <div class="fh-sub">Match with campus students in real-time. No awkward group texts.</div>
+        <button class="fh-cta" onclick="event.stopPropagation();navTo('find',document.getElementById('nav-find'))">⚡ Find Now</button>
+        <div class="fh-em">🎯</div>
+      </div>
+      <div class="sec-hdr">
+        <div class="sec-title">🔴 Live Now</div>
+        <span class="sec-link" onclick="navTo('matches',document.getElementById('nav-matches'))">View all →</span>
+      </div>
+      <div class="live-grid">
+        <div class="live-card" onclick="navTo('matches',document.getElementById('nav-matches'))">
+          <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+          <div class="live-icon">🏃</div><div class="live-sport">Running</div>
+          <div class="live-info">3 students · 6 PM<br>Ground A</div>
+        </div>
+        <div class="live-card" onclick="navTo('matches',document.getElementById('nav-matches'))">
+          <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+          <div class="live-icon">🏸</div><div class="live-sport">Badminton</div>
+          <div class="live-info">2 students · 7 PM<br>Court B · 1 slot</div>
+        </div>
+        <div class="live-card" onclick="navTo('matches',document.getElementById('nav-matches'))">
+          <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+          <div class="live-icon">🎵</div><div class="live-sport">Singing</div>
+          <div class="live-info">4 students · 8 PM<br>Music Room</div>
+        </div>
+        <div class="live-card" onclick="navTo('matches',document.getElementById('nav-matches'))">
+          <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+          <div class="live-icon">🚴</div><div class="live-sport">Cycling</div>
+          <div class="live-info">2 students · 7:30 PM<br>Campus Gate</div>
+        </div>
+      </div>
+      <div class="sec-hdr"><div class="sec-title">Browse Activities</div></div>
+      <div class="act-grid">
+        <div class="act-item" onclick="navTo('find',document.getElementById('nav-find'))"><div class="act-box" style="background:#FFF0F0">🏃</div><div class="act-lbl">Running</div></div>
+        <div class="act-item" onclick="navTo('find',document.getElementById('nav-find'))"><div class="act-box" style="background:#F0FFF4">🏸</div><div class="act-lbl">Badminton</div></div>
+        <div class="act-item" onclick="navTo('find',document.getElementById('nav-find'))"><div class="act-box" style="background:#F0F4FF">🏋️</div><div class="act-lbl">Gym</div></div>
+        <div class="act-item" onclick="navTo('find',document.getElementById('nav-find'))"><div class="act-box" style="background:#FFFBF0">🚴</div><div class="act-lbl">Cycling</div></div>
+        <div class="act-item" onclick="navTo('find',document.getElementById('nav-find'))"><div class="act-box" style="background:#FFF0FB">🎵</div><div class="act-lbl">Singing</div></div>
+        <div class="act-item" onclick="navTo('find',document.getElementById('nav-find'))"><div class="act-box" style="background:#F0FFFF">⚽</div><div class="act-lbl">Football</div></div>
+        <div class="act-item" onclick="navTo('find',document.getElementById('nav-find'))"><div class="act-box" style="background:#FFF8F0">🏏</div><div class="act-lbl">Cricket</div></div>
+        <div class="act-item" onclick="navTo('find',document.getElementById('nav-find'))"><div class="act-box" style="background:#F5F0FF">🏓</div><div class="act-lbl">Table Tennis</div></div>
+      </div>
+    </div>
+
+    <!-- ══ FIND ══ -->
+    <div id="view-find" class="view">
+      <div class="vhdr">
+        <div class="vhdr-row">
+          <div class="vtitle">Find a Buddy 🔍</div>
+          <button class="back-btn" onclick="navTo('home',document.getElementById('nav-home'))">← Back</button>
+        </div>
+        <div class="vsub">Set your preferences and get matched instantly</div>
+      </div>
+      <div class="find-layout">
+        <div class="filter-panel">
+          <div class="filter-title">⚙️ Match Filters</div>
+          <div class="flbl">Choose Activity</div>
+          <div class="pills" id="pAct">
+            <div class="pill sel" onclick="selPill(this,'pAct')">🏸 Badminton</div>
+            <div class="pill" onclick="selPill(this,'pAct')">🏃 Running</div>
+            <div class="pill" onclick="selPill(this,'pAct')">🚴 Cycling</div>
+            <div class="pill" onclick="selPill(this,'pAct')">🎵 Singing</div>
+            <div class="pill" onclick="selPill(this,'pAct')">🏋️ Gym</div>
+            <div class="pill" onclick="selPill(this,'pAct')">⚽ Football</div>
+          </div>
+          <div class="flbl">When?</div>
+          <div class="pills" id="pTime">
+            <div class="pill sel" onclick="selPill(this,'pTime')">⚡ Right Now</div>
+            <div class="pill" onclick="selPill(this,'pTime')">Today</div>
+            <div class="pill" onclick="selPill(this,'pTime')">Tomorrow</div>
+            <div class="pill" onclick="selPill(this,'pTime')">This Week</div>
+          </div>
+          <div class="flbl">Skill Level</div>
+          <div class="pills" id="pSkill">
+            <div class="pill sel" onclick="selPill(this,'pSkill')">🌱 Beginner</div>
+            <div class="pill" onclick="selPill(this,'pSkill')">📈 Intermediate</div>
+            <div class="pill" onclick="selPill(this,'pSkill')">🔥 Advanced</div>
+          </div>
+          <div class="flbl">Location</div>
+          <div class="pills" id="pLoc">
+            <div class="pill sel" onclick="selPill(this,'pLoc')">🏸 Court B</div>
+            <div class="pill" onclick="selPill(this,'pLoc')">🏃 Ground A</div>
+            <div class="pill" onclick="selPill(this,'pLoc')">🏋️ Gym</div>
+            <div class="pill" onclick="selPill(this,'pLoc')">🎵 Music Room</div>
+            <div class="pill" onclick="selPill(this,'pLoc')">🚴 Campus Gate</div>
+          </div>
+          <div class="preview-box">
+            <div style="font-size:11px;font-weight:800;color:#999;text-transform:uppercase;letter-spacing:.09em;margin-bottom:9px;">Match Preview</div>
+            <div class="preview-row">
+              <div style="font-size:28px;">🏸</div>
+              <div><div style="font-size:13px;font-weight:800;color:#111;">Badminton · Right Now</div><div style="font-size:12px;color:#888;font-weight:600;">Beginner · Court B</div></div>
+              <div style="margin-left:auto;background:#FFF0F0;border-radius:9px;padding:5px 10px;font-size:12px;font-weight:800;color:#FF6B6B;">3 matches</div>
+            </div>
+          </div>
+          <button class="match-btn" onclick="navTo('matches',document.getElementById('nav-matches'))">Find My Buddy 🎯</button>
+        </div>
+
+        <div>
+          <div style="background:var(--card);border-radius:20px;padding:28px;border:1.5px solid var(--border);margin-bottom:16px;">
+            <div style="font-family:var(--syne);font-size:17px;font-weight:800;color:var(--dark);margin-bottom:8px;">How it works</div>
+            <div style="font-size:13px;color:var(--muted);font-weight:600;line-height:1.9;">
+              1. Pick your activity, time, skill level and location.<br>
+              2. Hit <strong style="color:var(--dark)">"Find My Buddy"</strong> to see matched students nearby.<br>
+              3. Both tap <strong style="color:var(--dark)">Chat →</strong> to confirm the session.<br>
+              4. Activity locked in. Go have fun! 🎉
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div style="background:var(--card);border-radius:18px;padding:22px;border:1.5px solid var(--border);text-align:center;">
+              <div style="font-size:32px;margin-bottom:8px;">⚡</div>
+              <div style="font-family:var(--syne);font-size:24px;font-weight:800;color:var(--dark);">30s</div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:2px;">Avg. match time</div>
+            </div>
+            <div style="background:var(--card);border-radius:18px;padding:22px;border:1.5px solid var(--border);text-align:center;">
+              <div style="font-size:32px;margin-bottom:8px;">🏆</div>
+              <div style="font-family:var(--syne);font-size:24px;font-weight:800;color:var(--dark);">94%</div>
+              <div style="font-size:12px;font-weight:700;color:var(--muted);margin-top:2px;">Match acceptance</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MATCHES ══ -->
+    <div id="view-matches" class="view">
+      <div class="vhdr">
+        <div class="vhdr-row">
+          <div class="vtitle">Matches Found ✨</div>
+          <button class="back-btn" onclick="navTo('find',document.getElementById('nav-find'))">← Back to Find</button>
+        </div>
+        <div class="vsub">Students available for your activity right now</div>
+      </div>
+      <div class="msummary">
+        <span>🏸</span><span><strong>3 students</strong> available · Badminton · Court B · Now</span>
+      </div>
+      <div class="mcard" onclick="navTo('chat',document.getElementById('nav-chat'))">
+        <div class="mav" style="background:linear-gradient(135deg,#4ECDC4,#44A08D)">RK</div>
+        <div class="minfo">
+          <div class="mname">Rohan Kumar</div>
+          <div class="mmeta">MBA Year 1 · 0.2 km away</div>
+          <div class="mtags">
+            <span class="mtag" style="background:#F0FFF4;color:#2F9E44">🌱 Beginner</span>
+            <span class="mtag" style="background:#FFF3F0;color:#FF6B6B">⚡ Now</span>
+            <span class="mtag" style="background:#F0F4FF;color:#4C6EF5">Court B</span>
+          </div>
+        </div>
+        <button class="chat-btn" onclick="event.stopPropagation();navTo('chat',document.getElementById('nav-chat'))">Chat →</button>
+      </div>
+      <div class="mcard" onclick="navTo('chat',document.getElementById('nav-chat'))">
+        <div class="mav" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">PS</div>
+        <div class="minfo">
+          <div class="mname">Priya Sharma</div>
+          <div class="mmeta">Undergrad Year 2 · 0.4 km away</div>
+          <div class="mtags">
+            <span class="mtag" style="background:#F0FFF4;color:#2F9E44">🌱 Beginner</span>
+            <span class="mtag" style="background:#FFF3F0;color:#FF6B6B">⚡ Now</span>
+            <span class="mtag" style="background:#F0F4FF;color:#4C6EF5">Court B</span>
+          </div>
+        </div>
+        <button class="chat-btn" onclick="event.stopPropagation();navTo('chat',document.getElementById('nav-chat'))">Chat →</button>
+      </div>
+      <div class="mcard" onclick="navTo('chat',document.getElementById('nav-chat'))">
+        <div class="mav" style="background:linear-gradient(135deg,#FFE66D,#F7971E)">AV</div>
+        <div class="minfo">
+          <div class="mname">Arjun Verma</div>
+          <div class="mmeta">MBA Year 1 · 0.6 km away</div>
+          <div class="mtags">
+            <span class="mtag" style="background:#F0FFF4;color:#2F9E44">🌱 Beginner</span>
+            <span class="mtag" style="background:#FFFBF0;color:#E67700">30 min</span>
+            <span class="mtag" style="background:#F0F4FF;color:#4C6EF5">Court A</span>
+          </div>
+        </div>
+        <button class="chat-btn" onclick="event.stopPropagation();navTo('chat',document.getElementById('nav-chat'))">Chat →</button>
+      </div>
+      <div style="background:#F0FFF4;border-radius:16px;padding:15px 18px;border:1.5px solid #C3FAE8;margin-top:4px;">
+        <div style="font-size:13px;font-weight:800;color:#2F9E44;margin-bottom:3px;">💡 Pro tip</div>
+        <div style="font-size:13px;color:#555;font-weight:600;line-height:1.5;">Click a match to start chatting. Both must confirm to lock in the activity!</div>
+      </div>
+      <div style="text-align:center;margin-top:16px;">
+        <div style="font-size:13px;color:#aaa;font-weight:600;">Don't see the right match?</div>
+        <div style="font-size:14px;font-weight:800;color:var(--coral);margin-top:5px;cursor:pointer;" onclick="navTo('find',document.getElementById('nav-find'))">Post an open slot instead →</div>
+      </div>
+    </div>
+
+    <!-- ══ CHAT ══ -->
+    <div id="view-chat" class="view">
+      <!-- Desktop header -->
+      <div class="vhdr desktop-only">
+        <div class="vhdr-row">
+          <div class="vtitle">Messages 💬</div>
+          <button class="back-btn" onclick="navTo('matches',document.getElementById('nav-matches'))">← Back to Matches</button>
+        </div>
+        <div class="vsub">Chat with your matched activity buddies</div>
+      </div>
+
+      <!-- Chat layout -->
+      <div class="chat-layout" id="chatLayout">
+
+        <!-- LEFT: Conversation list -->
+        <div class="chat-col-list" id="chatColList">
+          <!-- Mobile only header -->
+          <div class="chat-list-wrap">
+            <div style="display:none;" class="mobile-chat-header">
+              <div class="vtitle" style="margin-bottom:4px;">Messages 💬</div>
+              <div class="vsub" style="margin-bottom:16px;">Chat with your matched buddies</div>
+            </div>
+          </div>
+          <div class="convo-list" style="padding:0 4px;">
+            <div class="convo-item active" onclick="openChat(this)">
+              <div class="conv-av" style="background:linear-gradient(135deg,#4ECDC4,#44A08D)">RK</div>
+              <div style="flex:1;min-width:0;"><div class="conv-name">Rohan Kumar</div><div class="conv-last">See you soon 🙌</div></div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;"><div class="conv-time">9:40</div><div class="conv-badge">1</div></div>
+            </div>
+            <div class="convo-item" onclick="openChat(this)">
+              <div class="conv-av" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">PS</div>
+              <div style="flex:1;min-width:0;"><div class="conv-name">Priya Sharma</div><div class="conv-last">Running tomorrow?</div></div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;"><div class="conv-time">Yesterday</div><div class="conv-badge">1</div></div>
+            </div>
+            <div class="convo-item" onclick="openChat(this)">
+              <div class="conv-av" style="background:linear-gradient(135deg,#FFE66D,#F7971E);color:#111">AV</div>
+              <div style="flex:1;min-width:0;"><div class="conv-name">Arjun Verma</div><div class="conv-last">Same time next week?</div></div>
+              <div style="flex-shrink:0;"><div class="conv-time">Mon</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Chat window -->
+        <div class="chat-col-window" id="chatColWindow">
+          <div class="chat-win-header-mobile">
+            <button class="chat-back-btn" onclick="closeMobileChat()">← Back to Messages</button>
+          </div>
+          <div class="chat-win" style="flex:1;">
+            <div class="chdr">
+              <div class="chav">RK</div>
+              <div><div class="cname">Rohan Kumar</div><div class="cstatus">● Online now</div></div>
+              <div class="cbadge">🏸 Badminton</div>
+            </div>
+            <div class="cmsgs" id="cmsgs">
+              <div class="sysmsg">Vibely matched you for Badminton · Court B · Now 🎯</div>
+              <div class="msg r"><div class="bubble">Hey! Saw you're up for badminton? I'm at Court B right now 🏸</div><div class="mtime">9:38 AM</div></div>
+              <div class="msg s"><div class="bubble">Yes! On my way, be there in 5 mins 👍</div><div class="mtime">9:39 AM</div></div>
+              <div class="msg r"><div class="bubble">Perfect! Do you have a racket or need to borrow one?</div><div class="mtime">9:39 AM</div></div>
+              <div class="msg s"><div class="bubble">I have mine! See you soon 🙌</div><div class="mtime">9:40 AM</div></div>
+              <div class="sysmsg">Activity confirmed ✅ Have a great game!</div>
+            </div>
+            <div class="cinput-bar">
+              <input class="cinput" id="cinput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
+              <button class="csend" onclick="sendMsg()">➤</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ GROUPS ══ -->
+    <div id="view-groups" class="view">
+      <div class="vhdr">
+        <div class="vtitle">Micro-Groups 👥</div>
+        <div class="vsub">Find your activity crew 🔥</div>
+      </div>
+      <div class="sec-hdr" style="margin-bottom:12px;"><div class="sec-title">My Groups</div></div>
+      <div class="groups-grid" style="margin-bottom:22px;">
+        <div class="gcard">
+          <div class="gcard-top"><div class="gemo">🏃</div><div><div class="gname">Morning Runners · Powai</div><div class="gsched">Daily · 6:00 AM · Ground A</div></div></div>
+          <div class="gmems-row">
+            <div class="gmems"><div class="mav2" style="background:#FF6B6B">AM</div><div class="mav2" style="background:#4ECDC4">RK</div><div class="mav2" style="background:#FFE66D;color:#111">PS</div><div class="mav2" style="background:#ADB5BD">+4</div><div class="gcnt">7 members</div></div>
+            <span style="font-size:12px;font-weight:800;color:#2F9E44;background:#F0FFF4;padding:5px 10px;border-radius:8px;">✓ Joined</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-hdr" style="margin-bottom:12px;"><div class="sec-title">Discover</div></div>
+      <div class="groups-grid">
+        <div class="gcard"><div class="gcard-top"><div class="gemo">🎵</div><div><div class="gname">Friday Singing Jams</div><div class="gsched">Every Friday · 8:00 PM · Music Room</div></div></div><div class="gmems-row"><div class="gmems"><div class="mav2" style="background:#9B59B6">AV</div><div class="mav2" style="background:#E74C3C">SN</div><div class="mav2" style="background:#27AE60">MK</div><div class="mav2" style="background:#ADB5BD">+5</div><div class="gcnt">8 members</div></div><button class="gjoin" onclick="toggleJoin(this)">Join</button></div></div>
+        <div class="gcard"><div class="gcard-top"><div class="gemo">🚴</div><div><div class="gname">Cycling Crew</div><div class="gsched">Weekends · 7:00 AM · Campus Gate</div></div></div><div class="gmems-row"><div class="gmems"><div class="mav2" style="background:#F39C12">RK</div><div class="mav2" style="background:#2980B9">DM</div><div class="mav2" style="background:#ADB5BD">+3</div><div class="gcnt">5 members</div></div><button class="gjoin" onclick="toggleJoin(this)">Join</button></div></div>
+        <div class="gcard"><div class="gcard-top"><div class="gemo">🏸</div><div><div class="gname">Badminton Beginners</div><div class="gsched">Tue &amp; Thu · 6:30 PM · Court B</div></div></div><div class="gmems-row"><div class="gmems"><div class="mav2" style="background:#1ABC9C">SK</div><div class="mav2" style="background:#E67E22">PV</div><div class="mav2" style="background:#ADB5BD">+6</div><div class="gcnt">8 members</div></div><button class="gjoin" onclick="toggleJoin(this)">Join</button></div></div>
+        <div class="gcard"><div class="gcard-top"><div class="gemo">🏋️</div><div><div class="gname">Gym Bros</div><div class="gsched">Mon, Wed, Fri · 7 AM · Gym</div></div></div><div class="gmems-row"><div class="gmems"><div class="mav2" style="background:#8E44AD">VK</div><div class="mav2" style="background:#2ECC71">AM</div><div class="mav2" style="background:#ADB5BD">+4</div><div class="gcnt">6 members</div></div><button class="gjoin" onclick="toggleJoin(this)">Join</button></div></div>
+        <div class="gcard"><div class="gcard-top"><div class="gemo">⚽</div><div><div class="gname">Evening Football</div><div class="gsched">Tue &amp; Sat · 5:30 PM · Ground B</div></div></div><div class="gmems-row"><div class="gmems"><div class="mav2" style="background:#E74C3C">RS</div><div class="mav2" style="background:#3498DB">PK</div><div class="mav2" style="background:#ADB5BD">+8</div><div class="gcnt">10 members</div></div><button class="gjoin" onclick="toggleJoin(this)">Join</button></div></div>
+        <div class="create-card"><div style="font-size:30px;margin-bottom:10px;">✨</div><div style="font-size:15px;font-weight:800;color:#F7F6F2;margin-bottom:5px;">Create Your Own Group</div><div style="font-size:12px;color:rgba(247,246,242,.42);font-weight:600;line-height:1.5;">Start a recurring activity crew on campus</div></div>
+      </div>
+    </div>
+
+    <!-- ══ PROFILE ══ -->
+    <div id="view-profile" class="view">
+      <div class="vhdr">
+        <div class="vtitle">My Profile 👤</div>
+        <div class="vsub">Manage your Vibely identity and preferences</div>
+      </div>
+      <div class="profile-layout">
+        <div class="prof-card">
+          <div class="pav-lg">AM</div>
+          <div class="pname">Aarav Mehta</div>
+          <div class="pcourse">MBA Year 1 · IITB</div>
+          <div class="pstats">
+            <div><div class="pstat-val">12</div><div class="pstat-lbl">Activities</div></div>
+            <div><div class="pstat-val">8</div><div class="pstat-lbl">Buddies</div></div>
+            <div><div class="pstat-val">2</div><div class="pstat-lbl">Groups</div></div>
+          </div>
+          <div class="pverif">
+            <div class="pverif-icon">🎓</div>
+            <div><div class="pverif-name">Campus Verified</div><div class="pverif-sub">aarav@iitb.ac.in</div></div>
+            <span style="margin-left:auto;font-size:16px;">✅</span>
+          </div>
+          <button class="psignout" onclick="goTo('pg-sso')">Sign Out</button>
+        </div>
+        <div class="prof-details">
+          <div class="detail-card">
+            <div class="dtitle">Interests</div>
+            <div class="chips-wrap">
+              <span class="chip" style="background:#FFF0F0;color:#FF6B6B">🏃 Running</span>
+              <span class="chip" style="background:#F0FFF4;color:#2F9E44">🏸 Badminton</span>
+              <span class="chip" style="background:#FFFBF0;color:#E67700">🚴 Cycling</span>
+              <span class="chip" style="background:#FFF0FB;color:#9B59B6">🎵 Singing</span>
+              <span class="chip" style="background:#F0F4FF;color:#4C6EF5">🏋️ Gym</span>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="dtitle">Skill Levels</div>
+            <div class="skill-row"><span class="ski">🏃</span><span class="skname">Running</span><span class="sklvl" style="background:#F0FFF4;color:#2F9E44">🌱 Beginner</span></div>
+            <div class="skill-row"><span class="ski">🏸</span><span class="skname">Badminton</span><span class="sklvl" style="background:#F0FFF4;color:#2F9E44">🌱 Beginner</span></div>
+            <div class="skill-row"><span class="ski">🚴</span><span class="skname">Cycling</span><span class="sklvl" style="background:#FFFBF0;color:#E67700">📈 Intermediate</span></div>
+            <div class="skill-row"><span class="ski">🎵</span><span class="skname">Singing</span><span class="sklvl" style="background:#F0FFF4;color:#2F9E44">🌱 Beginner</span></div>
+          </div>
+          <div class="detail-card">
+            <div class="dtitle">Availability</div>
+            <div class="avrow"><span class="avlbl">Weekday Evenings</span><span class="avt">5 PM – 9 PM</span></div>
+            <div class="avrow"><span class="avlbl">Weekend Mornings</span><span class="avt">6 AM – 10 AM</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mobile-nav">
+    <div class="mn-item active" id="mnav-home" onclick="navTo('home',document.getElementById('nav-home'));mnavActive(this)">
+      <div class="mn-ico">🏠</div><div class="mn-lbl">Home</div>
+    </div>
+    <div class="mn-item" id="mnav-find" onclick="navTo('find',document.getElementById('nav-find'));mnavActive(this)">
+      <div class="mn-ico">🔍</div><div class="mn-lbl">Find</div>
+    </div>
+    <div class="mn-item" id="mnav-matches" onclick="navTo('matches',document.getElementById('nav-matches'));mnavActive(this)">
+      <div class="mn-ico">✨</div><div class="mn-lbl">Matches</div>
+    </div>
+    <div class="mn-item" id="mnav-chat" onclick="navTo('chat',document.getElementById('nav-chat'));mnavActive(this)">
+      <div class="mn-ico">💬</div><div class="mn-lbl">Chat</div>
+    </div>
+    <div class="mn-item" id="mnav-groups" onclick="navTo('groups',document.getElementById('nav-groups'));mnavActive(this)">
+      <div class="mn-ico">👥</div><div class="mn-lbl">Groups</div>
+    </div>
+    <div class="mn-item" id="mnav-profile" onclick="navTo('profile',document.getElementById('nav-profile'));mnavActive(this)">
+      <div class="mn-ico">👤</div><div class="mn-lbl">Profile</div>
+    </div>
+  </nav>
+
+</div><!-- /pg-app -->
+
+<script>
+// ── Navigation ──────────────────────────────────────────
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='pg-app'){
+    window.scrollTo(0,0);
+  }
+}
+
+function gotoApp(){ goTo('pg-app'); }
+
+function navTo(viewId, navEl){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+viewId).classList.add('active');
+
+  // Sidebar nav
+  if(navEl){
+    document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+    navEl.classList.add('active');
+  }
+
+  // Mobile nav sync
+  const mnavMap = {home:'mnav-home',find:'mnav-find',matches:'mnav-matches',chat:'mnav-chat',groups:'mnav-groups',profile:'mnav-profile'};
+  if(mnavMap[viewId]){
+    document.querySelectorAll('.mn-item').forEach(i=>i.classList.remove('active'));
+    const mEl = document.getElementById(mnavMap[viewId]);
+    if(mEl) mEl.classList.add('active');
+  }
+
+  // Mobile: scroll main content area
+  const mainEl = document.getElementById('main-scroll');
+  if(mainEl) mainEl.scrollTop=0;
+  window.scrollTo(0,0);
+
+  // Chat mobile: show list by default
+  if(viewId==='chat'){
+    const isMobile = window.innerWidth <= 768;
+    if(isMobile){
+      document.getElementById('chatColList').classList.remove('hidden');
+      const win = document.getElementById('chatColWindow');
+      win.classList.remove('open');
+      // show mobile chat header
+      const mch = document.querySelector('.mobile-chat-header');
+      if(mch) mch.style.display='block';
+    }
+  }
+}
+
+function mnavActive(el){
+  document.querySelectorAll('.mn-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Pill selection ──────────────────────────────────────
+function selPill(el, groupId){
+  document.getElementById(groupId).querySelectorAll('.pill').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ── Join group toggle ───────────────────────────────────
+function toggleJoin(btn){
+  btn.classList.toggle('joined');
+  btn.textContent = btn.classList.contains('joined') ? '✓ Joined' : 'Join';
+}
+
+// ── Chat send ───────────────────────────────────────────
+function sendMsg(){
+  const inp = document.getElementById('cinput');
+  const txt = inp.value.trim();
+  if(!txt) return;
+  const box = document.getElementById('cmsgs');
+  const el = document.createElement('div');
+  el.className='msg s';
+  el.innerHTML=`<div class="bubble">${escHtml(txt)}</div><div class="mtime">Just now</div>`;
+  box.appendChild(el);
+  inp.value='';
+  box.scrollTop = box.scrollHeight;
+  setTimeout(()=>{
+    const rep=document.createElement('div');
+    rep.className='msg r';
+    const replies=["Sounds good! 👍","Cool, see you there!","Let's do it! 🎯","Perfect timing!","On my way 🏃"];
+    rep.innerHTML=`<div class="bubble">${replies[Math.floor(Math.random()*replies.length)]}</div><div class="mtime">Just now</div>`;
+    box.appendChild(rep);
+    box.scrollTop=box.scrollHeight;
+  },900);
+}
+
+function escHtml(t){
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Mobile chat open/close ──────────────────────────────
+function openChat(convoEl){
+  const isMobile = window.innerWidth <= 768;
+  // Mark active convo
+  document.querySelectorAll('.convo-item').forEach(c=>c.classList.remove('active'));
+  convoEl.classList.add('active');
+
+  if(isMobile){
+    document.getElementById('chatColList').classList.add('hidden');
+    const win = document.getElementById('chatColWindow');
+    win.classList.add('open');
+    win.style.display = 'flex';
+    win.style.flexDirection = 'column';
+  }
+}
+
+function closeMobileChat(){
+  document.getElementById('chatColList').classList.remove('hidden');
+  const win = document.getElementById('chatColWindow');
+  win.classList.remove('open');
+}
+
+// ── Mobile chat layout reset on resize ─────────────────
+window.addEventListener('resize', ()=>{
+  const isMobile = window.innerWidth <= 768;
+  const list = document.getElementById('chatColList');
+  const win = document.getElementById('chatColWindow');
+  if(!isMobile){
+    list.classList.remove('hidden');
+    win.classList.remove('open');
+    win.style.display='';
+  }
+});
+
+// ── Desktop chat: show window by default on load ────────
+(function(){
+  const isMobile = window.innerWidth <= 768;
+  if(!isMobile){
+    const win = document.getElementById('chatColWindow');
+    if(win){
+      win.style.display='flex';
+      win.style.flexDirection='column';
+    }
+  }
+})();
+
+// ── Handle navTo links that originate from mobile nav ──
+// Ensure sidebar nav item also gets updated when mobile nav is tapped
+const sidebarIds = {home:'nav-home',find:'nav-find',matches:'nav-matches',chat:'nav-chat',groups:'nav-groups',profile:'nav-profile'};
+</script>
+</body>
+</html>
